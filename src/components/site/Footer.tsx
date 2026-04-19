@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/gobuyme-logo.jpg";
 
 const cols = [
@@ -31,7 +31,23 @@ const cols = [
   },
 ];
 
-export const Footer = () => (
+export const Footer = () => {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
+    if (to === "/#faq") {
+      e.preventDefault();
+      if (pathname === "/") {
+        const el = document.getElementById("faq");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        navigate("/#faq");
+      }
+    }
+  };
+
+  return (
   <footer className="bg-foreground text-background">
     <div className="container py-16">
       <div className="grid grid-cols-2 gap-10 md:grid-cols-5">
@@ -49,7 +65,7 @@ export const Footer = () => (
             <ul className="mt-4 space-y-2">
               {c.l.map((i) => (
                 <li key={i.label}>
-                  <Link to={i.to} className="text-background/80 hover:text-background">{i.label}</Link>
+                  <Link to={i.to} onClick={(e) => handleClick(e, i.to)} className="text-background/80 hover:text-background">{i.label}</Link>
                 </li>
               ))}
             </ul>
@@ -64,4 +80,5 @@ export const Footer = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};

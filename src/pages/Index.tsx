@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
 import { TickerBar } from "@/components/site/TickerBar";
@@ -11,6 +13,17 @@ import { DownloadCTA } from "@/components/site/DownloadCTA";
 import { Footer } from "@/components/site/Footer";
 
 const Index = () => {
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (hash) {
+      const id = hash.replace("#", "");
+      // wait a tick for sections to mount
+      requestAnimationFrame(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, [hash]);
   return (
     <main className="min-h-screen bg-background">
       <Nav />
