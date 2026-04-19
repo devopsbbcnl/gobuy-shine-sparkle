@@ -1,4 +1,35 @@
+import { Link } from "react-router-dom";
 import logo from "@/assets/gobuyme-logo.jpg";
+
+const cols = [
+  {
+    h: "Eat",
+    l: [
+      { label: "Food", to: "/food" },
+      { label: "Groceries", to: "/groceries" },
+      { label: "Pharmacy", to: "/pharmacy" },
+      { label: "Errands", to: "/errands" },
+    ],
+  },
+  {
+    h: "Earn",
+    l: [
+      { label: "For Vendors", to: "/vendors" },
+      { label: "For Riders", to: "/riders" },
+      { label: "Affiliate", to: "/affiliate" },
+      { label: "Press", to: "/press" },
+    ],
+  },
+  {
+    h: "Help",
+    l: [
+      { label: "Contact", to: "/contact" },
+      { label: "FAQ", to: "/#faq" },
+      { label: "Terms", to: "/terms" },
+      { label: "Privacy", to: "/privacy" },
+    ],
+  },
+];
 
 export const Footer = () => (
   <footer className="bg-foreground text-background">
@@ -12,16 +43,14 @@ export const Footer = () => (
             Delivering happiness — one jollof, grocery run and midnight craving at a time.
           </p>
         </div>
-        {[
-          { h: "Eat", l: ["Food", "Groceries", "Pharmacy", "Errands"] },
-          { h: "Earn", l: ["For Vendors", "For Riders", "Affiliate", "Press"] },
-          { h: "Help", l: ["Contact", "FAQ", "Terms", "Privacy"] },
-        ].map((c) => (
+        {cols.map((c) => (
           <div key={c.h}>
             <div className="font-mono-pop text-xs uppercase tracking-widest text-primary">{c.h}</div>
             <ul className="mt-4 space-y-2">
               {c.l.map((i) => (
-                <li key={i}><a href="#" className="text-background/80 hover:text-background">{i}</a></li>
+                <li key={i.label}>
+                  <Link to={i.to} className="text-background/80 hover:text-background">{i.label}</Link>
+                </li>
               ))}
             </ul>
           </div>
