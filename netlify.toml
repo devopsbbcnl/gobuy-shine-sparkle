@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/form-submit"
+  to = "/.netlify/functions/form-submit"
+  status = 200
+
+# SPA (React Router): send all non-file routes to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

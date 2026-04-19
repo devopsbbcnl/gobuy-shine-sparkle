@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "@/assets/gobuyme-logo.jpg";
+import logo from "@/assets/logo.png";
 
 const cols = [
   {
@@ -75,8 +75,8 @@ export const Footer = () => {
     </div>
     <div className="border-t border-background/15">
       <div className="container flex flex-col items-center justify-between gap-4 py-6 font-mono-pop text-xs uppercase tracking-widest text-background/60 md:flex-row">
-        <span>© {new Date().getFullYear()} GoBuyMe. Deliver Happiness.</span>
-        <span>Made with 🌶️ in Lagos</span>
+        <span>Powered by Bubble Barrel Commerce Limited. © {new Date().getFullYear()} GoBuyMe. Deliver Happiness.</span>
+        <span>Made with 🌶️ in Owerri</span>
       </div>
     </div>
   </footer>

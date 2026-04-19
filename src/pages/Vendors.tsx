@@ -6,6 +6,7 @@ import { Marquee } from "@/components/site/Marquee";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { submitSiteForm } from "@/lib/submitSiteForm";
 import jollof from "@/assets/sticker-jollof.png";
 import grocery from "@/assets/sticker-grocery.png";
 import burger from "@/assets/sticker-burger.png";
@@ -22,18 +23,18 @@ const perks = [
 const tiers = [
   {
     name: "Starter",
-    price: "₦0",
-    sub: "/month",
+    price: "TIER1",
+    sub: "/Free forever",
     color: "bg-background",
-    features: ["Up to 100 orders/mo", "Standard placement", "Email support", "Daily payouts"],
+    features: ["Unlimited orders", "Standard placement", "Email support", "Daily payouts", "3% Platform Commission"],
     cta: "Start free",
   },
   {
     name: "Growth",
-    price: "₦15k",
-    sub: "/month",
+    price: "TIER2",
+    sub: "/Free Forever",
     color: "bg-accent",
-    features: ["Unlimited orders", "Boosted placement", "Promo engine", "Priority WhatsApp support", "Loyalty stamps"],
+    features: ["Everything in Tier 1", "Boosted placement", "Promo engine", "Priority WhatsApp support", "Loyalty stamps", "7.5% Platform Commission"],
     cta: "Go Growth",
     featured: true,
   },
@@ -51,13 +52,26 @@ const Vendors = () => {
   const { toast } = useToast();
   const [biz, setBiz] = useState("");
   const [phone, setPhone] = useState("");
+  const [sending, setSending] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!biz || !phone) return;
-    toast({ title: "We got you 🎉", description: "Our team will reach out within 24 hours." });
-    setBiz("");
-    setPhone("");
+    if (!biz || !phone || sending) return;
+    setSending(true);
+    try {
+      await submitSiteForm("vendors-apply", { businessName: biz, phone });
+      toast({ title: "We got you 🎉", description: "Our team will reach out within 24 hours." });
+      setBiz("");
+      setPhone("");
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Could not send",
+        description: err instanceof Error ? err.message : "Try again in a moment.",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -79,7 +93,7 @@ const Vendors = () => {
               <span className="bg-accent px-3 text-accent-foreground">Sell out.</span>
             </h1>
             <p className="mt-6 max-w-md text-lg opacity-90">
-              Join 1,200+ Lagos kitchens, supermarkets and pharmacies turning GoBuyMe orders into a second storefront.
+              Join 1,200+ Nigerian kitchens, supermarkets and pharmacies turning GoBuyMe orders into a second storefront.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -124,6 +138,7 @@ const Vendors = () => {
 
       <Marquee
         items={[
+          "Our Dream",
           "₦8.4B paid to vendors",
           "1,200+ active partners",
           "Avg 38% revenue lift",
@@ -234,7 +249,12 @@ const Vendors = () => {
               Drop your business name and number. Our partnerships team will call within 24 hours to set you up.
             </p>
           </div>
-          <form onSubmit={submit} className="rounded-3xl border-2 border-background bg-background p-8 text-foreground shadow-pop">
+          <form
+            id="site-form-vendors-apply"
+            data-form-id="vendors-apply"
+            onSubmit={submit}
+            className="rounded-3xl border-2 border-background bg-background p-8 text-foreground shadow-pop"
+          >
             <label className="font-mono-pop text-xs uppercase tracking-widest">Business name</label>
             <Input
               value={biz}
@@ -251,9 +271,10 @@ const Vendors = () => {
             />
             <Button
               type="submit"
+              disabled={sending}
               className="mt-6 w-full rounded-full border-2 border-ink bg-primary text-primary-foreground shadow-pop-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono-pop text-xs uppercase tracking-widest h-12"
             >
-              Submit application →
+              {sending ? "Sending…" : "Submit application →"}
             </Button>
           </form>
         </div>

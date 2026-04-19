@@ -4,6 +4,7 @@ import { SimplePage } from "@/components/site/SimplePage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { submitSiteForm } from "@/lib/submitSiteForm";
 
 const tiers = [
   { name: "Hustler", earn: "₦500", per: "per signup", note: "First 10 referrals" },
@@ -15,13 +16,26 @@ const Affiliate = () => {
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [handle, setHandle] = useState("");
+  const [sending, setSending] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !handle) return;
-    toast({ title: "Application received 🚀", description: "We'll review and email your affiliate code within 48 hours." });
-    setName("");
-    setHandle("");
+    if (!name || !handle || sending) return;
+    setSending(true);
+    try {
+      await submitSiteForm("affiliate", { name, socialHandle: handle });
+      toast({ title: "Application received 🚀", description: "We'll review and email your affiliate code within 48 hours." });
+      setName("");
+      setHandle("");
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Could not send",
+        description: err instanceof Error ? err.message : "Try again in a moment.",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -67,13 +81,22 @@ const Affiliate = () => {
             <h2 className="font-display text-4xl md:text-5xl">Apply in 30 seconds</h2>
             <p className="mt-3 max-w-md opacity-80">Drop your details. We'll send your unique code, marketing kit and dashboard login.</p>
           </div>
-          <form onSubmit={submit} className="rounded-3xl border-2 border-background bg-background p-6 text-foreground shadow-pop">
+          <form
+            id="site-form-affiliate"
+            data-form-id="affiliate"
+            onSubmit={submit}
+            className="rounded-3xl border-2 border-background bg-background p-6 text-foreground shadow-pop"
+          >
             <label className="font-mono-pop text-xs uppercase tracking-widest">Full name</label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Chinedu Okeke" className="mt-2 border-2 border-ink" />
             <label className="mt-4 block font-mono-pop text-xs uppercase tracking-widest">Social handle</label>
             <Input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="@chinedu" className="mt-2 border-2 border-ink" />
-            <Button type="submit" className="mt-6 w-full rounded-full border-2 border-ink bg-primary text-primary-foreground shadow-pop-sm font-mono-pop text-xs uppercase tracking-widest">
-              Get my code →
+            <Button
+              type="submit"
+              disabled={sending}
+              className="mt-6 w-full rounded-full border-2 border-ink bg-primary text-primary-foreground shadow-pop-sm font-mono-pop text-xs uppercase tracking-widest"
+            >
+              {sending ? "Sending…" : "Get my code →"}
             </Button>
           </form>
         </div>

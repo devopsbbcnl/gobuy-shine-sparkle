@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/gobuyme-logo.jpg";
+import logo from "@/assets/logo.png";
 
 const links = [
   { label: "Eat", href: "#services" },

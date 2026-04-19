@@ -27,7 +27,7 @@ export const Hero = () => {
             className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-accent px-4 py-1.5 font-mono-pop text-xs uppercase tracking-widest shadow-pop-sm"
           >
             <span className="h-2 w-2 animate-pulse rounded-full bg-hot" />
-            Now delivering across Lagos, Abuja & PH
+            Now delivering across major cities in Nigeria
           </motion.div>
 
           <motion.h1

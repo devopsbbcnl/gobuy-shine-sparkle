@@ -6,6 +6,7 @@ import { Marquee } from "@/components/site/Marquee";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { submitSiteForm } from "@/lib/submitSiteForm";
 import rider from "@/assets/sticker-rider.png";
 
 const perks = [
@@ -22,14 +23,27 @@ const Riders = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
+  const [sending, setSending] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone) return;
-    toast({ title: "Welcome to the squad 🛵", description: "Onboarding details coming via SMS." });
-    setName("");
-    setPhone("");
-    setCity("");
+    if (!name || !phone || sending) return;
+    setSending(true);
+    try {
+      await submitSiteForm("riders-signup", { name, phone, city });
+      toast({ title: "Welcome to the squad 🛵", description: "Onboarding details coming via SMS." });
+      setName("");
+      setPhone("");
+      setCity("");
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Could not send",
+        description: err instanceof Error ? err.message : "Try again in a moment.",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -51,7 +65,7 @@ const Riders = () => {
               <span className="text-primary">Repeat.</span>
             </h1>
             <p className="mt-6 max-w-md text-lg text-background/80">
-              Become a GoBuyMe Captain. Flexible hours, weekly cash-outs and the busiest order book in Lagos.
+              Become a GoBuyMe Captain. Flexible hours, weekly cash-outs and the busiest order book in Nigeria.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -207,7 +221,12 @@ const Riders = () => {
               Sign up takes 60 seconds. We'll text you a link to complete onboarding and book your gear pickup.
             </p>
           </div>
-          <form onSubmit={submit} className="rounded-3xl border-2 border-ink bg-background p-8 text-foreground shadow-pop">
+          <form
+            id="site-form-riders-signup"
+            data-form-id="riders-signup"
+            onSubmit={submit}
+            className="rounded-3xl border-2 border-ink bg-background p-8 text-foreground shadow-pop"
+          >
             <label className="font-mono-pop text-xs uppercase tracking-widest">Full name</label>
             <Input
               value={name}
@@ -231,9 +250,10 @@ const Riders = () => {
             />
             <Button
               type="submit"
+              disabled={sending}
               className="mt-6 h-12 w-full rounded-full border-2 border-ink bg-foreground text-background shadow-pop-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono-pop text-xs uppercase tracking-widest"
             >
-              Sign me up →
+              {sending ? "Sending…" : "Sign me up →"}
             </Button>
           </form>
         </div>

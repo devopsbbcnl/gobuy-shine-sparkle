@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { submitSiteForm } from "@/lib/submitSiteForm";
 
 const channels = [
-  { emoji: "💬", title: "WhatsApp support", note: "+234 800 GO-BUY-ME", sub: "Mon–Sun · 6am–12am" },
-  { emoji: "✉️", title: "Email", note: "hello@gobuyme.shop", sub: "We reply within 4 hours" },
-  { emoji: "🏢", title: "HQ", note: "12 Admiralty Way, Lekki Phase 1, Lagos", sub: "Visits by appointment" },
-  { emoji: "🚨", title: "Emergency", note: "+234 700 SOS-BUYM", sub: "Order issues · 24/7" },
+  { emoji: "💬", title: "WhatsApp support", note: "+234 707 890 1075", sub: "Mon–Sun · 7am–10pm" },
+  { emoji: "✉️", title: "Email", note: "contact@gobuyme.shop", sub: "We reply within 4 hours" },
+  { emoji: "🏢", title: "HQ", note: "7th Avenu Federal Housing Estate, Egbeada. Owerri, Nigeria.", sub: "Visits by appointment" },
+  { emoji: "🚨", title: "Emergency", note: "+234 707 890 1075", sub: "Order issues · 24/7" },
 ];
 
 const Contact = () => {
@@ -17,14 +18,27 @@ const Contact = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
+  const [sending, setSending] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !msg) return;
-    toast({ title: "Message sent ✉️", description: "We'll get back to you within 4 hours." });
-    setName("");
-    setEmail("");
-    setMsg("");
+    if (!name || !email || !msg || sending) return;
+    setSending(true);
+    try {
+      await submitSiteForm("contact", { name, email, message: msg });
+      toast({ title: "Message sent ✉️", description: "We'll get back to you within 4 hours." });
+      setName("");
+      setEmail("");
+      setMsg("");
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Could not send",
+        description: err instanceof Error ? err.message : "Try again in a moment.",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -59,15 +73,24 @@ const Contact = () => {
             <h2 className="font-display text-4xl md:text-5xl">Or drop a note</h2>
             <p className="mt-3 max-w-md opacity-90">For longer questions, partnership ideas, or feedback — we'll route it to the right team.</p>
           </div>
-          <form onSubmit={submit} className="rounded-3xl border-2 border-ink bg-background p-6 shadow-pop">
+          <form
+            id="site-form-contact"
+            data-form-id="contact"
+            onSubmit={submit}
+            className="rounded-3xl border-2 border-ink bg-background p-6 shadow-pop"
+          >
             <label className="font-mono-pop text-xs uppercase tracking-widest">Name</label>
             <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-2 border-2 border-ink" />
             <label className="mt-4 block font-mono-pop text-xs uppercase tracking-widest">Email</label>
             <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-2 border-2 border-ink" />
             <label className="mt-4 block font-mono-pop text-xs uppercase tracking-widest">Message</label>
             <Textarea value={msg} onChange={(e) => setMsg(e.target.value)} rows={5} className="mt-2 border-2 border-ink" />
-            <Button type="submit" className="mt-6 w-full rounded-full border-2 border-ink bg-foreground text-background shadow-pop-sm font-mono-pop text-xs uppercase tracking-widest">
-              Send message →
+            <Button
+              type="submit"
+              disabled={sending}
+              className="mt-6 w-full rounded-full border-2 border-ink bg-foreground text-background shadow-pop-sm font-mono-pop text-xs uppercase tracking-widest"
+            >
+              {sending ? "Sending…" : "Send message →"}
             </Button>
           </form>
         </div>

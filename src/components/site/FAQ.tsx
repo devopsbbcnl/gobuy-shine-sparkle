@@ -3,8 +3,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const faqs = [
   { q: "Where does GoBuyMe deliver?", a: "We're live across Lagos, Abuja, Port Harcourt and 50+ cities — and we add a new one almost every week. Open the app to see if we're in your area." },
   { q: "How fast is delivery?", a: "Average 25 minutes for food and 60 minutes for groceries within delivery zones. You get live tracking from kitchen to doorstep." },
-  { q: "What payment methods are accepted?", a: "Cards, bank transfer, USSD, and the GoBuyMe Wallet. Cash on delivery is available in select cities." },
-  { q: "How do I list my restaurant or store?", a: "Tap 'List your business' above. Onboarding takes ~10 minutes — no setup fee for your first 90 days." },
+  { q: "What payment methods are accepted?", a: "Cards, bank transfer and USSD. Cash on delivery is available in select cities." },
+  { q: "How do I list my restaurant or store?", a: "Tap 'List your business' above. Onboarding takes ~10 minutes — no setup fee, just choose a partnership tier." },
   { q: "How much do riders earn?", a: "Earnings depend on hours and city, but our top riders pull in ₦150k+ per month with weekend bonuses and tips." },
   { q: "What if my order is wrong or late?", a: "We refund instantly through the app. Our support is human, fast, and actually solves problems." },
 ];
