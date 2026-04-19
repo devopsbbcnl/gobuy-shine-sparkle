@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import rider from "@/assets/sticker-rider.png";
 
 export const PartnerCTA = () => (
@@ -28,9 +29,9 @@ export const PartnerCTA = () => (
           <li>→ Daily payouts, no minimum</li>
           <li>→ Built-in promo & loyalty engine</li>
         </ul>
-        <a href="#" className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-background bg-background px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-foreground shadow-[6px_6px_0_hsl(var(--foreground))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+        <Link to="/vendors" className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-background bg-background px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-foreground shadow-[6px_6px_0_hsl(var(--foreground))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
           List your business →
-        </a>
+        </Link>
       </motion.div>
 
       {/* Riders */}
@@ -57,9 +58,9 @@ export const PartnerCTA = () => (
         <p className="mt-4 max-w-xs opacity-90">
           Flexible hours. Weekly cash-out. Top riders earn ₦150k+ per month with bonuses.
         </p>
-        <a href="#" className="relative z-10 mt-8 inline-flex items-center gap-2 rounded-full border-2 border-background bg-primary px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-primary-foreground shadow-[6px_6px_0_hsl(var(--background))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+        <Link to="/riders" className="relative z-10 mt-8 inline-flex items-center gap-2 rounded-full border-2 border-background bg-primary px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-primary-foreground shadow-[6px_6px_0_hsl(var(--background))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
           Become a rider →
-        </a>
+        </Link>
       </motion.div>
     </div>
   </section>
