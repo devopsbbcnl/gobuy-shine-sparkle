@@ -3,6 +3,12 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[build.environment]
+  # Tell secrets scanner to ignore values of these non-secret config vars
+  SECRETS_SCAN_OMIT_KEYS = "RESEND_FROM,FORMS_TO_EMAIL,PARTNERS_EMAIL,FORM_API_PORT"
+  # Skip dev-only and documentation files that aren't part of the deployed site
+  SECRETS_SCAN_OMIT_PATHS = "CLAUDE.md,server"
+
 [[redirects]]
   from = "/api/form-submit"
   to = "/.netlify/functions/form-submit"
@@ -13,5 +19,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-SECRETS_SCAN_OMIT_KEYS = "RESEND_FROM,FORMS_TO_EMAIL,PARTNERS_EMAIL,FORM_API_PORT"
