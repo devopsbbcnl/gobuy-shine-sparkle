@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { PageNav } from "@/components/site/PageNav";
 import { Footer } from "@/components/site/Footer";
 import { Marquee } from "@/components/site/Marquee";
+import playstoreIcon from "@/assets/playstore-svgrepo-com.svg";
 
 /** Swap for live App Store and Play listing URLs when published */
 const APP_STORE_URL = "#";
@@ -27,9 +28,7 @@ const PlayStoreBadge = ({ className = "" }: { className?: string }) => (
     href={PLAY_STORE_URL}
     className={`inline-flex items-center gap-3 rounded-full border-2 border-ink bg-background px-7 py-4 text-foreground shadow-[8px_8px_0_hsl(var(--foreground))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none ${className}`}
   >
-    <svg className="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M3.6 2.3c-.4.4-.6 1-.6 1.7v16c0 .7.2 1.3.6 1.7l9.4-9.7L3.6 2.3zm10.8 10l2.6 2.7-11.4 6.5 8.8-9.2zm0-2 8.8-9.2-11.4 6.5 2.6 2.7zm5.5 1L17.5 14l3.7 2.1c1-.5 1-2.1 0-2.6L20 12.3z" />
-    </svg>
+    <img src={playstoreIcon} className="h-7 w-7 shrink-0" alt="" aria-hidden />
     <div className="text-left leading-tight">
       <div className="font-mono-pop text-[10px] uppercase tracking-widest opacity-75">Get it on</div>
       <div className="font-display text-xl">Google Play</div>

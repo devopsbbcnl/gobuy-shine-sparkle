@@ -3,10 +3,8 @@ import { useState } from "react";
 import { PageNav } from "@/components/site/PageNav";
 import { Footer } from "@/components/site/Footer";
 import { Marquee } from "@/components/site/Marquee";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { submitSiteForm } from "@/lib/submitSiteForm";
+import { RegistrationModal } from "@/components/site/RegistrationModal";
+import { BookCallModal } from "@/components/site/BookCallModal";
 import jollof from "@/assets/sticker-jollof.png";
 import grocery from "@/assets/sticker-grocery.png";
 import burger from "@/assets/sticker-burger.png";
@@ -45,34 +43,13 @@ const tiers = [
     color: "bg-foreground text-background",
     features: ["Multi-branch console", "Dedicated account lead", "Co-marketing campaigns", "API access"],
     cta: "Book a call",
+    bookCall: true,
   },
 ];
 
 const Vendors = () => {
-  const { toast } = useToast();
-  const [biz, setBiz] = useState("");
-  const [phone, setPhone] = useState("");
-  const [sending, setSending] = useState(false);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!biz || !phone || sending) return;
-    setSending(true);
-    try {
-      await submitSiteForm("vendors-apply", { businessName: biz, phone });
-      toast({ title: "We got you 🎉", description: "Our team will reach out within 24 hours." });
-      setBiz("");
-      setPhone("");
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Could not send",
-        description: err instanceof Error ? err.message : "Try again in a moment.",
-      });
-    } finally {
-      setSending(false);
-    }
-  };
+  const [modalOpen, setModalOpen] = useState(false);
+  const [bookCallOpen, setBookCallOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-background">
@@ -96,12 +73,12 @@ const Vendors = () => {
               Join 1,200+ Nigerian kitchens, supermarkets and pharmacies turning GoBuyMe orders into a second storefront.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#apply"
+              <button
+                onClick={() => setModalOpen(true)}
                 className="inline-flex items-center gap-2 rounded-full border-2 border-background bg-background px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-foreground shadow-[6px_6px_0_hsl(var(--foreground))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
               >
                 List your business →
-              </a>
+              </button>
               <a
                 href="#pricing"
                 className="inline-flex items-center gap-2 rounded-full border-2 border-background px-6 py-3 font-mono-pop text-xs uppercase tracking-widest"
@@ -226,12 +203,12 @@ const Vendors = () => {
                     <li key={f}>→ {f}</li>
                   ))}
                 </ul>
-                <a
-                  href="#apply"
+                <button
+                  onClick={() => t.bookCall ? setBookCallOpen(true) : setModalOpen(true)}
                   className="mt-8 inline-flex w-full items-center justify-center rounded-full border-2 border-ink bg-primary px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-primary-foreground shadow-pop-sm transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
                 >
                   {t.cta} →
-                </a>
+                </button>
               </motion.div>
             ))}
           </div>
@@ -246,39 +223,42 @@ const Vendors = () => {
               Ready to <span className="text-primary">sell more</span>?
             </h2>
             <p className="mt-4 max-w-md text-background/80">
-              Drop your business name and number. Our partnerships team will call within 24 hours to set you up.
+              Create your vendor account in minutes. Our partnerships team will review and approve you within 24 hours.
             </p>
           </div>
-          <form
-            id="site-form-vendors-apply"
-            data-form-id="vendors-apply"
-            onSubmit={submit}
-            className="rounded-3xl border-2 border-background bg-background p-8 text-foreground shadow-pop"
-          >
-            <label className="font-mono-pop text-xs uppercase tracking-widest">Business name</label>
-            <Input
-              value={biz}
-              onChange={(e) => setBiz(e.target.value)}
-              placeholder="Mama Put Express"
-              className="mt-2 border-2 border-ink"
-            />
-            <label className="mt-4 block font-mono-pop text-xs uppercase tracking-widest">Phone</label>
-            <Input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+234 801 234 5678"
-              className="mt-2 border-2 border-ink"
-            />
-            <Button
-              type="submit"
-              disabled={sending}
-              className="mt-6 w-full rounded-full border-2 border-ink bg-primary text-primary-foreground shadow-pop-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono-pop text-xs uppercase tracking-widest h-12"
+          <div className="rounded-3xl border-2 border-background bg-background p-8 text-foreground shadow-pop">
+            <p className="font-mono-pop text-xs uppercase tracking-widest text-muted-foreground">
+              What you'll need
+            </p>
+            <ul className="mt-4 space-y-2 text-sm">
+              {[
+                "Business name & category",
+                "Valid email address",
+                "Business address",
+                "A commission plan (Starter or Growth)",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-0.5 text-primary">→</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-6 inline-flex w-full items-center justify-center rounded-full border-2 border-ink bg-primary px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-primary-foreground shadow-pop-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-12"
             >
-              {sending ? "Sending…" : "Submit application →"}
-            </Button>
-          </form>
+              Apply now →
+            </button>
+          </div>
         </div>
       </section>
+
+      <RegistrationModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        defaultTab="vendor"
+      />
+      <BookCallModal open={bookCallOpen} onOpenChange={setBookCallOpen} />
 
       <Footer />
     </main>

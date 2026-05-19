@@ -3,10 +3,7 @@ import { useState } from "react";
 import { PageNav } from "@/components/site/PageNav";
 import { Footer } from "@/components/site/Footer";
 import { Marquee } from "@/components/site/Marquee";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { submitSiteForm } from "@/lib/submitSiteForm";
+import { RegistrationModal } from "@/components/site/RegistrationModal";
 import rider from "@/assets/sticker-rider.png";
 
 const perks = [
@@ -19,32 +16,7 @@ const perks = [
 ];
 
 const Riders = () => {
-  const { toast } = useToast();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
-  const [sending, setSending] = useState(false);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !phone || sending) return;
-    setSending(true);
-    try {
-      await submitSiteForm("riders-signup", { name, phone, city });
-      toast({ title: "Welcome to the squad 🛵", description: "Onboarding details coming via SMS." });
-      setName("");
-      setPhone("");
-      setCity("");
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Could not send",
-        description: err instanceof Error ? err.message : "Try again in a moment.",
-      });
-    } finally {
-      setSending(false);
-    }
-  };
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-background">
@@ -68,12 +40,12 @@ const Riders = () => {
               Become a GoBuyMe Captain. Flexible hours, weekly cash-outs and the busiest order book in Nigeria.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#signup"
+              <button
+                onClick={() => setModalOpen(true)}
                 className="inline-flex items-center gap-2 rounded-full border-2 border-background bg-primary px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-primary-foreground shadow-[6px_6px_0_hsl(var(--background))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
               >
                 Become a rider →
-              </a>
+              </button>
               <a
                 href="#earnings"
                 className="inline-flex items-center gap-2 rounded-full border-2 border-background px-6 py-3 font-mono-pop text-xs uppercase tracking-widest"
@@ -200,12 +172,12 @@ const Riders = () => {
             <p className="mt-4">
               Our lease-to-own program puts a brand-new Sonik bike under you for as low as ₦4,500/day. Pay from your earnings, own it in 18 months.
             </p>
-            <a
-              href="#signup"
+            <button
+              onClick={() => setModalOpen(true)}
               className="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-foreground px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-background shadow-pop-sm transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
             >
               Apply for a bike →
-            </a>
+            </button>
           </motion.div>
         </div>
       </section>
@@ -218,46 +190,41 @@ const Riders = () => {
               Start earning <span className="bg-accent px-3 text-accent-foreground">this week</span>.
             </h2>
             <p className="mt-4 max-w-md opacity-90">
-              Sign up takes 60 seconds. We'll text you a link to complete onboarding and book your gear pickup.
+              Sign up takes a few minutes. Once approved, you'll be on the road and earning within 48 hours.
             </p>
           </div>
-          <form
-            id="site-form-riders-signup"
-            data-form-id="riders-signup"
-            onSubmit={submit}
-            className="rounded-3xl border-2 border-ink bg-background p-8 text-foreground shadow-pop"
-          >
-            <label className="font-mono-pop text-xs uppercase tracking-widest">Full name</label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Tunde Adekunle"
-              className="mt-2 border-2 border-ink"
-            />
-            <label className="mt-4 block font-mono-pop text-xs uppercase tracking-widest">Phone</label>
-            <Input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+234 801 234 5678"
-              className="mt-2 border-2 border-ink"
-            />
-            <label className="mt-4 block font-mono-pop text-xs uppercase tracking-widest">City</label>
-            <Input
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="Lagos"
-              className="mt-2 border-2 border-ink"
-            />
-            <Button
-              type="submit"
-              disabled={sending}
-              className="mt-6 h-12 w-full rounded-full border-2 border-ink bg-foreground text-background shadow-pop-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono-pop text-xs uppercase tracking-widest"
+          <div className="rounded-3xl border-2 border-ink bg-background p-8 text-foreground shadow-pop">
+            <p className="font-mono-pop text-xs uppercase tracking-widest text-muted-foreground">
+              What you'll need
+            </p>
+            <ul className="mt-4 space-y-2 text-sm">
+              {[
+                "Valid email address",
+                "NIN (National ID Number)",
+                "Your vehicle type",
+                "A guarantor (optional)",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-0.5 text-primary">→</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full border-2 border-ink bg-foreground px-6 font-mono-pop text-xs uppercase tracking-widest text-background shadow-pop-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
             >
-              {sending ? "Sending…" : "Sign me up →"}
-            </Button>
-          </form>
+              Become a rider →
+            </button>
+          </div>
         </div>
       </section>
+
+      <RegistrationModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        defaultTab="rider"
+      />
 
       <Footer />
     </main>

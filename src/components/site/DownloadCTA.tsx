@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import playstoreIcon from "@/assets/playstore-svgrepo-com.svg";
 
 export const DownloadCTA = () => (
   <section id="download" className="relative overflow-hidden border-b-2 border-ink bg-primary py-24 text-primary-foreground md:py-32">
@@ -45,7 +46,7 @@ export const DownloadCTA = () => (
           </div>
         </a>
         <a href="#" className="inline-flex items-center gap-3 rounded-full border-2 border-background bg-background px-7 py-4 text-foreground shadow-[8px_8px_0_hsl(var(--foreground))] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
-          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 2.3c-.4.4-.6 1-.6 1.7v16c0 .7.2 1.3.6 1.7l9.4-9.7L3.6 2.3z"/></svg>
+          <img src={playstoreIcon} className="h-6 w-6" alt="" aria-hidden />
           <div className="text-left leading-tight">
             <div className="font-mono-pop text-[10px] uppercase tracking-widest opacity-75">Get it on</div>
             <div className="font-display text-lg">Google Play</div>

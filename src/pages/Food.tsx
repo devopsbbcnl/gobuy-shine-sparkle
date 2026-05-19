@@ -61,7 +61,7 @@ const Food = () => (
             Open the app, pick your spice level, watch the rider come through. Average time door-to-door: 25 minutes in Lagos.
           </p>
           <Link
-            to="/"
+            to="/downloads"
             className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-foreground px-6 py-3 font-mono-pop text-xs uppercase tracking-widest text-background shadow-pop-sm"
           >
             Get the app →

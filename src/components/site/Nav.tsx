@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
@@ -29,8 +30,8 @@ export const Nav = () => {
             </a>
           ))}
         </nav>
-        <Button variant="default" className="rounded-full border-2 border-ink bg-foreground text-background shadow-pop-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all font-mono-pop text-xs uppercase tracking-widest">
-          Get the app ↓
+        <Button variant="default" asChild className="rounded-full border-2 border-ink bg-foreground text-background shadow-pop-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all font-mono-pop text-xs uppercase tracking-widest">
+          <Link to="/downloads">Get the app ↓</Link>
         </Button>
       </div>
     </motion.header>

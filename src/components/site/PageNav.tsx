@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
 const links = [
-  { label: "Home", to: "/" },
+  { label: "Eat", to: "/food" },
+  { label: "How", to: "/#how" },
   { label: "Vendors", to: "/vendors" },
   { label: "Riders", to: "/riders" },
+  { label: "FAQ", to: "/#faq" },
 ];
 
 export const PageNav = () => {
@@ -28,7 +30,7 @@ export const PageNav = () => {
               key={l.to}
               to={l.to}
               className={`font-mono-pop text-xs uppercase tracking-widest transition-colors hover:text-primary ${
-                pathname === l.to ? "text-primary" : ""
+                pathname === l.to.split("#")[0] ? "text-primary" : ""
               }`}
             >
               {l.label}

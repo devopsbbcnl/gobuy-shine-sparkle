@@ -3,43 +3,22 @@ import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 dotenv.config({ path: path.join(projectRoot, ".env") });
 dotenv.config({ path: path.join(projectRoot, ".env.local") });
 
 const PORT = Number(process.env.FORM_API_PORT || 8787);
-const ALLOWED_FORMS = new Set(["contact", "riders-signup", "vendors-apply", "affiliate"]);
+const ALLOWED_FORMS = new Set(["contact", "riders-signup", "vendors-apply", "affiliate", "book-a-call"]);
 
-function firstEnv(...keys) {
-  for (const key of keys) {
-    const v = process.env[key]?.trim();
-    if (v) return v;
-  }
-  return "";
-}
-
-function createMailTransport(host, user, pass) {
-  const port = Number(process.env.SMTP_FROM_PORT || 465);
-  const secureRaw = process.env.SMTP_FROM_SECURE;
-  const secure =
-    secureRaw !== undefined && String(secureRaw).trim() !== ""
-      ? String(secureRaw).toLowerCase() === "true"
-      : port === 465;
-
-  /** @type {import('nodemailer').TransportOptions} */
-  const opts = {
-    host,
-    port,
-    secure,
-    auth: { user, pass },
-  };
-  if (!secure && [587, 2587].includes(port)) {
-    opts.requireTLS = true;
-  }
-  return nodemailer.createTransport(opts);
-}
+// Per-form overrides — to address and subject prefix
+const FORM_OVERRIDES = {
+  "book-a-call": {
+    to: process.env.PARTNERS_EMAIL?.trim() || "partners@gobuyme.shop",
+    subjectPrefix: "[GoBuyMe] Enterprise enquiry",
+  },
+};
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -55,69 +34,64 @@ app.post("/api/form-submit", async (req, res) => {
       return res.status(400).json({ error: "Invalid fields" });
     }
 
-    const host = process.env.SMTP_HOST?.trim();
-    const user = process.env.SMTP_FROM_USER?.trim();
-    const pass = firstEnv("SMTP_FROM_PASS", "SMTP_FROM_PASSWORD", "RESEND_API_KEY");
-    const to = firstEnv("FORMS_TO_EMAIL", "SMTP_FROM_EMAIL");
+    const apiKey = process.env.RESEND_API_KEY?.trim();
+    const from = process.env.RESEND_FROM?.trim() || "GoBuyMe <contact@notifications.gobuyme.shop>";
+    const defaultTo = process.env.FORMS_TO_EMAIL?.trim();
 
-    if (!host || !user || !pass || !to) {
-      const missing = [
-        !host && "SMTP_HOST",
-        !user && "SMTP_FROM_USER",
-        !pass && "SMTP_FROM_PASS, SMTP_FROM_PASSWORD, or RESEND_API_KEY",
-        !to && "FORMS_TO_EMAIL (or SMTP_FROM_EMAIL)",
-      ].filter(Boolean);
-      console.error("form-api: missing env:", missing.join(", "));
+    if (!apiKey) {
+      console.error("form-api: missing RESEND_API_KEY");
+      return res.status(503).json({ error: "Mail is not configured on the server" });
+    }
+    if (!defaultTo) {
+      console.error("form-api: missing FORMS_TO_EMAIL");
       return res.status(503).json({ error: "Mail is not configured on the server" });
     }
 
-    const transporter = createMailTransport(host, user, pass);
-
-    const from =
-      process.env.SMTP_FROM_NAME?.trim() ||
-      (process.env.SMTP_FROM_EMAIL ? `"GoBuyMe" <${process.env.SMTP_FROM_EMAIL}>` : undefined);
-    if (!from) {
-      return res.status(503).json({ error: "Mail is not configured on the server" });
-    }
+    const override = FORM_OVERRIDES[formId] ?? {};
+    const to = override.to ?? defaultTo;
 
     const flat = Object.fromEntries(
       Object.entries(fields).map(([k, v]) => [k, v == null ? "" : String(v)]),
     );
 
     const lines = Object.entries(flat).map(([k, v]) => `${k}: ${v}`);
-    const text = [`Form ID: ${formId}`, `Submitted (UTC): ${new Date().toISOString()}`, "", ...lines].join("\n");
-    const safeHtml = text
+    const textBody = [`Form: ${formId}`, `Submitted (UTC): ${new Date().toISOString()}`, "", ...lines].join("\n");
+    const safeHtml = textBody
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .split("\n")
       .join("<br>\n");
 
-    /** @type {import('nodemailer').SendMailOptions} */
-    const mail = {
+    const subject = override.subjectPrefix
+      ? `${override.subjectPrefix} — ${flat.businessName || flat.name || formId}`
+      : `[GoBuyMe forms] ${formId}`;
+
+    const resend = new Resend(apiKey);
+
+    const payload = {
       from,
       to,
-      subject: `[GoBuyMe forms] ${formId}`,
-      text,
-      html: `<p style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.5">${safeHtml}</p>`,
+      subject,
+      text: textBody,
+      html: `<p style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.6">${safeHtml}</p>`,
     };
 
-    const reply = flat.email?.trim();
-    if (reply && reply.includes("@")) {
-      mail.replyTo = reply;
+    const replyEmail = flat.email?.trim();
+    if (replyEmail && replyEmail.includes("@")) {
+      payload.replyTo = replyEmail;
     }
 
-    await transporter.sendMail(mail);
+    const { error } = await resend.emails.send(payload);
+
+    if (error) {
+      console.error("form-api resend error:", error);
+      return res.status(502).json({ error: "Failed to send message" });
+    }
+
     res.json({ ok: true });
   } catch (e) {
     console.error("form-api:", e);
-    const code = /** @type {{ code?: string; responseCode?: number }} */ (e);
-    if (code.code === "EAUTH" || code.responseCode === 535) {
-      return res.status(502).json({
-        error:
-          "SMTP login rejected (535). Use a valid API key as the password; for Resend set SMTP_FROM_USER=resend. If SMTP_FROM_PASS is empty, remove it so SMTP_FROM_PASSWORD or RESEND_API_KEY is used.",
-      });
-    }
     res.status(500).json({ error: "Failed to send message" });
   }
 });

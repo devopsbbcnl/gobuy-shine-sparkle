@@ -1,5 +1,5 @@
 /** Must match server/form-api.mjs ALLOWED_FORMS */
-export type SiteFormId = "contact" | "riders-signup" | "vendors-apply" | "affiliate";
+export type SiteFormId = "contact" | "riders-signup" | "vendors-apply" | "affiliate" | "book-a-call";
 
 const endpoint = import.meta.env.VITE_FORM_API_URL ?? "/api/form-submit";
 

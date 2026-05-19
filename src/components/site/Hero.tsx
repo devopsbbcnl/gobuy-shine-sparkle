@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import jollof from "@/assets/sticker-jollof.png";
 import burger from "@/assets/sticker-burger.png";
 import grocery from "@/assets/sticker-grocery.png";
+import playstoreIcon from "@/assets/playstore-svgrepo-com.svg";
 
 export const Hero = () => {
   return (
@@ -79,7 +80,7 @@ export const Hero = () => {
               href="#download"
               className="group inline-flex items-center gap-3 rounded-full border-2 border-ink bg-primary px-6 py-4 text-primary-foreground shadow-pop transition-all hover:-translate-y-1 hover:shadow-pop-orange"
             >
-              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M3.6 2.3c-.4.4-.6 1-.6 1.7v16c0 .7.2 1.3.6 1.7l9.4-9.7L3.6 2.3zm10.8 10l2.6 2.7-11.4 6.5 8.8-9.2zm0-2 8.8-9.2-11.4 6.5 2.6 2.7zm5.5 1L17.5 14l3.7 2.1c1-.5 1-2.1 0-2.6L20 12.3z"/></svg>
+              <img src={playstoreIcon} className="h-6 w-6" alt="" aria-hidden />
               <div className="text-left leading-tight">
                 <div className="font-mono-pop text-[10px] uppercase tracking-widest opacity-90">Get it on</div>
                 <div className="font-display text-lg">Google Play</div>
