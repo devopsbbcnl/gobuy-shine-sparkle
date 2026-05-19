@@ -29,11 +29,11 @@ All site contact/signup forms (Contact, Affiliate, etc.) use a shared utility:
 ```
 submitSiteForm(formId, fields)   ← src/lib/submitSiteForm.ts
   → POST /api/form-submit
-    dev:  server/form-api.mjs          (Resend SDK)
-    prod: netlify/functions/form-submit.mjs  (⚠ still uses nodemailer/SMTP — not yet migrated)
+    dev:  server/form-api.mjs                (Resend SDK)
+    prod: netlify/functions/form-submit.mjs  (Resend SDK)
 ```
 
-**Critical sync requirement:** `ALLOWED_FORMS` must be kept identical in both `server/form-api.mjs` and `netlify/functions/form-submit.mjs`, and the `SiteFormId` union type in `src/lib/submitSiteForm.ts` must match both. Per-form `to` overrides (e.g. `book-a-call → partners@gobuyme.shop`) exist only in the Express server — the Netlify function does not have them yet.
+**Critical sync requirement:** `ALLOWED_FORMS` and `FORM_OVERRIDES` must be kept identical in both `server/form-api.mjs` and `netlify/functions/form-submit.mjs`, and the `SiteFormId` union type in `src/lib/submitSiteForm.ts` must match both.
 
 ### Registration modal
 
@@ -83,4 +83,4 @@ className="rounded-3xl border-2 border-ink bg-card p-7 shadow-pop-sm"
 | `FORM_API_PORT` | `server/form-api.mjs` | Express port (default `8787`) |
 | `VITE_FORM_API_URL` | `src/lib/submitSiteForm.ts` | Override form API endpoint (defaults to `/api/form-submit`) |
 
-The Netlify function still reads SMTP env vars (`SMTP_HOST`, `SMTP_FROM_USER`, etc.) — set those in the Netlify dashboard until the function is migrated to the Resend SDK.
+Both the Express dev server and the Netlify function use the Resend SDK and read the same env vars.
